@@ -14,7 +14,6 @@
   --border:#1e2333;
   --border2:#2a2e45;
   --acc:#e8003d;
-  --pvw:#ff9800;
   --green:#00e676;
   --blue:#2979ff;
   --text:#cdd4f0;
@@ -24,7 +23,7 @@
   --ffm:'Share Tech Mono',monospace;
   --ffb:'Bebas Neue',sans-serif;
 }
-body{background:var(--bg);color:var(--text);font-family:var(--ff);min-height:100vh;overflow:hidden;}
+body{background:var(--bg);color:var(--text);font-family:var(--ff);min-height:100vh;overflow:hidden;user-select:none;}
 
 /* TOP BAR */
 #topbar{
@@ -41,20 +40,52 @@ body{background:var(--bg);color:var(--text);font-family:var(--ff);min-height:100
 .tb-caminfo{display:flex;align-items:center;gap:10px;font-size:.85rem;}
 .chip{padding:2px 9px;border-radius:3px;font-family:var(--ffb);font-size:.85rem;letter-spacing:1px;}
 .chip.pgm{background:var(--acc);color:#fff;}
-.chip.pvw{background:var(--pvw);color:#000;}
 .chip-name{font-family:var(--ffb);font-size:.9rem;letter-spacing:1px;color:var(--text);min-width:130px;}
 
-/* MAIN AREA */
+/* MAIN AREA (FIXED: Menggunakan flex untuk resizer) */
 #main{
-  display:grid;
-  grid-template-columns:1fr 300px;
+  display:flex;
   height:calc(100vh - 46px - 34px);
+  width:100%;
+  position:relative;
 }
 
 /* LEFT SIDE */
-#left-col{display:flex;flex-direction:column;overflow:hidden;}
+#left-col{
+  flex: 1;
+  min-width: 400px;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
 
-/* PGM PREVIEW (FIXED: Mengatasi gambar tenggelam) */
+/* DRAG RESIZER OVERLAY & STYLE */
+#resizer {
+  width: 6px;
+  background: var(--border);
+  cursor: col-resize;
+  position: relative;
+  transition: background 0.2s;
+  z-index: 40;
+  flex-shrink: 0;
+}
+#resizer:hover, .resizing #resizer {
+  background: var(--blue);
+}
+
+/* RIGHT PANEL */
+#right-panel{
+  width: 320px;
+  min-width: 260px;
+  max-width: 600px;
+  background:var(--panel);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  flex-shrink: 0;
+}
+
+/* PGM PREVIEW */
 #pgm-preview{
   position:relative;flex-shrink:0;
   background:#000;
@@ -65,7 +96,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--ff);min-height:100
   align-items:center;
   justify-content:center;
 }
-#pgm-preview .pgm-frame{width:100%;height:100%;display:block;border:none;}
 #pgm-label-overlay{
   position:absolute;top:8px;left:8px;z-index:10;
   background:var(--acc);color:#fff;
@@ -114,7 +144,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--ff);min-height:100
 }
 .cam-cell:hover{border-color:var(--border2);transform:scale(1.02);}
 .cam-cell.pgm{border-color:var(--acc)!important;box-shadow:0 0 12px #e8003d55;transform:scale(1.03);}
-.cam-cell.pvw{border-color:var(--pvw)!important;box-shadow:0 0 8px #ff980044;}
 .cam-cell.flash{animation:cellFlash .2s ease-out;}
 @keyframes cellFlash{0%{filter:brightness(4) saturate(0)}100%{filter:brightness(1) saturate(1)}}
 
@@ -129,14 +158,12 @@ body{background:var(--bg);color:var(--text);font-family:var(--ff);min-height:100
   transition:color .15s,border-color .15s;
 }
 .cam-cell.pgm .cell-lbl{color:var(--acc);border-color:var(--acc);}
-.cam-cell.pvw .cell-lbl{color:var(--pvw);border-color:var(--pvw);}
 
 .cell-dot{
   position:absolute;top:5px;right:5px;width:7px;height:7px;
   border-radius:50%;background:var(--border);z-index:5;
 }
 .cam-cell.pgm .cell-dot{background:var(--acc);box-shadow:0 0 6px var(--acc);animation:blinkPgm .8s infinite;}
-.cam-cell.pvw .cell-dot{background:var(--pvw);box-shadow:0 0 5px var(--pvw);}
 
 .cell-status-bar{
   height:16px;display:flex;align-items:center;justify-content:space-between;
@@ -145,20 +172,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--ff);min-height:100
 }
 .cell-num{font-family:var(--ffb);font-size:.75rem;color:var(--muted2);}
 .cam-cell.pgm .cell-num{color:var(--acc);}
-.cam-cell.pvw .cell-num{color:var(--pvw);}
 .cell-type-tag{font-size:.55rem;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;}
-
-/* RIGHT PANEL */
-#right-panel{
-  background:var(--panel);border-left:1px solid var(--border);
-  display:flex;flex-direction:column;overflow:hidden;
-}
-.rp-sec{padding:10px 12px;border-bottom:1px solid var(--border);}
-.rp-title{
-  font-family:var(--ffb);font-size:.8rem;letter-spacing:3px;color:var(--muted);
-  margin-bottom:7px;display:flex;align-items:center;gap:5px;
-}
-.rp-title::before{content:'';display:block;width:3px;height:10px;background:var(--acc);border-radius:2px;}
 
 /* YT SECTION */
 .yt-input-row{display:flex;gap:6px;margin-bottom:7px;}
@@ -178,8 +192,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--ff);min-height:100
 }
 .btn:hover{filter:brightness(1.2);}
 .btn:active{transform:scale(.95);}
-.btn.secondary{background:var(--panel2);border:1px solid var(--border);color:var(--text);}
-.btn.secondary:hover{border-color:var(--blue);color:var(--blue);}
 
 #yt-results{
   display:flex;flex-direction:column;gap:4px;
@@ -206,7 +218,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--ff);min-height:100
   position:relative;background:#000;
   border-bottom:1px solid var(--border);
   overflow:hidden;
-  height:160px;
+  height:150px;
 }
 #yt-embed{width:100%;height:100%;display:block;border:none;}
 .embed-placeholder{
@@ -230,42 +242,19 @@ body{background:var(--bg);color:var(--text);font-family:var(--ff);min-height:100
 }
 .sw-btn:hover{border-color:var(--border2);}
 .sw-btn.pgm-sw{border-color:var(--acc);background:#150007;box-shadow:0 0 10px #e8003d33;}
-.sw-btn.pvw-sw{border-color:var(--pvw);background:#150a00;}
 .sw-num{font-family:var(--ffb);font-size:1.2rem;line-height:1;color:var(--muted);}
 .sw-btn.pgm-sw .sw-num{color:var(--acc);}
-.sw-btn.pvw-sw .sw-num{color:var(--pvw);}
 .sw-lbl{font-size:.55rem;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);text-align:center;line-height:1.2;}
 .sw-dot{width:5px;height:5px;border-radius:50%;background:var(--border);margin-top:2px;}
 .sw-btn.pgm-sw .sw-dot{background:var(--acc);box-shadow:0 0 5px var(--acc);animation:blinkPgm .8s infinite;}
-.sw-btn.pvw-sw .sw-dot{background:var(--pvw);}
-
-/* TRANSITIONS */
-.trans-row{
-  display:flex;gap:5px;padding:8px 12px;
-  border-top:1px solid var(--border);
-}
-.t-btn{
-  flex:1;padding:6px 3px;border-radius:5px;
-  font-family:var(--ffb);font-size:.9rem;letter-spacing:1px;
-  border:1px solid var(--border);background:#090912;color:var(--text);
-  cursor:pointer;text-align:center;transition:all .12s;
-}
-.t-btn:hover{border-color:var(--blue);color:var(--blue);}
-.t-btn.on{border-color:var(--blue);background:#000d1f;color:var(--blue);}
-.take-btn{
-  flex:1.3;background:var(--acc);border:none;color:#fff;border-radius:5px;
-  font-family:var(--ffb);font-size:1rem;letter-spacing:1px;
-  cursor:pointer;transition:filter .15s,transform .1s;padding:6px;
-}
-.take-btn:hover{filter:brightness(1.2);}
-.take-btn:active{transform:scale(.95);}
 
 /* BOTTOM STATUS BAR */
 #statusbar{
-  height:34px;grid-column:1/3;
+  height:34px;
   display:flex;align-items:center;gap:10px;
   padding:0 14px;background:#050710;border-top:1px solid var(--border);
   font-size:.75rem;color:var(--muted);
+  position:relative;z-index:50;
 }
 .s-chip{display:flex;align-items:center;gap:4px;padding:2px 8px;border:1px solid var(--border);border-radius:10px;font-size:.72rem;}
 .s-chip .sd{width:5px;height:5px;border-radius:50%;background:var(--muted);}
@@ -282,7 +271,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--ff);min-height:100
 }
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
-/* LOADING in yt results */
+/* LOADING */
 .yt-loading{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:.8rem;padding:10px 6px;}
 .spin{width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:sp .7s linear infinite;}
 @keyframes sp{to{transform:rotate(360deg)}}
@@ -294,72 +283,57 @@ body{background:var(--bg);color:var(--text);font-family:var(--ff);min-height:100
   <div class="tb-logo">🎬 <em>MULTI</em>VIEW<span style="color:var(--acc)">DIR</span></div>
   <div class="tb-tc" id="tc">00:00:00:00</div>
   <div class="tb-caminfo">
-    <span class="chip pgm">PGM</span>
+    <span class="chip pgm">PGM LIVE</span>
     <span class="chip-name" id="pgm-name">CAM 5 — MASTER</span>
-    <span style="color:var(--border)">|</span>
-    <span class="chip pvw">PVW</span>
-    <span class="chip-name" id="pvw-name">CAM 3 — SINGER L</span>
   </div>
 </div>
 
 <div id="main">
 
   <div id="left-col">
-
     <div id="pgm-preview">
-      <div id="pgm-label-overlay">● PGM</div>
+      <div id="pgm-label-overlay">● LIVE</div>
       <div id="pgm-cam-overlay">CAM 5 — MASTER CENTER</div>
       <div id="pgm-illustration"></div>
     </div>
-
     <div id="mv-grid"></div>
-
   </div>
 
-  <div id="right-panel">
+  <div id="resizer"></div>
 
+  <div id="right-panel">
     <div id="embed-wrap">
       <div class="embed-placeholder" id="embed-placeholder">
         <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16"/></svg>
         <span>Cari lagu untuk diputar</span>
       </div>
-      <iframe id="yt-embed" style="display:none;" allowfullscreen
-        allow="autoplay; encrypted-media"></iframe>
+      <iframe id="yt-embed" style="display:none;" allowfullscreen allow="autoplay; encrypted-media"></iframe>
     </div>
 
     <div class="rp-sec">
       <div class="rp-title">Music — Paste Link / Search</div>
       <div class="yt-input-row">
-        <input class="yt-input" id="yt-input" placeholder="Link YouTube atau judul lagu..."
-          onkeydown="if(event.key==='Enter')handleYT()">
+        <input class="yt-input" id="yt-input" placeholder="Link YouTube atau judul lagu..." onkeydown="if(event.key==='Enter')handleYT()">
         <button class="btn" id="btn-search" onclick="handleYT()">🔍</button>
       </div>
       <div id="yt-results"></div>
     </div>
 
     <div class="rp-sec" style="padding-bottom:5px;">
-      <div class="rp-title">Camera Switcher</div>
-      <div style="font-size:.7rem;color:var(--muted);margin-bottom:5px;">Klik 1x = Preview &nbsp;|&nbsp; Klik PVW = Take to Air</div>
+      <div class="rp-title">Direct Camera Switcher</div>
+      <div style="font-size:.7rem;color:var(--muted);margin-bottom:5px;">Klik untuk langsung tayangkan (CUT TO AIR)</div>
     </div>
     <div class="sw-grid" id="sw-grid"></div>
-
-    <div class="trans-row">
-      <button class="t-btn on" id="tb-cut" onclick="setTrans('cut')">CUT</button>
-      <button class="t-btn" id="tb-mix" onclick="setTrans('mix')">MIX</button>
-      <button class="t-btn" id="tb-fade" onclick="setTrans('fade')">FADE</button>
-      <button class="take-btn" onclick="doTake()">▶ TAKE</button>
-    </div>
-
   </div>
 
 </div>
 
 <div id="statusbar">
-  <div class="s-chip ok"><div class="sd"></div>VIDEO</div>
-  <div class="s-chip ok"><div class="sd"></div>AUDIO</div>
-  <div class="s-chip" id="yt-status-chip"><div class="sd"></div>YOUTUBE</div>
-  <div class="s-chip ok"><div class="sd"></div>10 CAM ACTIVE</div>
-  <div id="shortcut-hint">Keyboard: 1–0 = Preview · SPACE/T = Take · Enter = Search</div>
+  <div class="s-chip ok"><div class="sd"></div>VIDEO ENGINE</div>
+  <div class="s-chip ok"><div class="sd"></div>AUDIO ENGINE</div>
+  <div class="s-chip" id="yt-status-chip"><div class="sd"></div>YOUTUBE STREAM</div>
+  <div class="s-chip ok"><div class="sd"></div>10 CAM SYSTEM</div>
+  <div id="shortcut-hint">Keyboard: angka 1–0 = Langsung Cut Kamera · Enter = Search</div>
 </div>
 
 <div id="toast"></div>
@@ -367,289 +341,65 @@ body{background:var(--bg);color:var(--text);font-family:var(--ff);min-height:100
 <script>
 // ─── CAMERA DEFINITIONS ───────────────────────────────────────────────────────
 const CAMS = [
-  {
-    id:1, label:'CAM 1', short:'GB-L', name:'Gimbal Kiri', type:'GB',
-    desc:'Bass · Drum · Guitar',
-    color:'#00b4d8', color2:'#0077a8',
-    svgFn: svgGimbalLeft
-  },
-  {
-    id:2, label:'CAM 2', short:'GB-R', name:'Gimbal Kanan', type:'GB',
-    desc:'Keys · Synth · Violin',
-    color:'#7b5ea7', color2:'#5a3d88',
-    svgFn: svgGimbalRight
-  },
-  {
-    id:3, label:'CAM 3', short:'HH-L', name:'Singer Kiri', type:'HH',
-    desc:'Handheld Vocalist L',
-    color:'#e91e8c', color2:'#b0005e',
-    svgFn: svgHandheldSingerL
-  },
-  {
-    id:4, label:'CAM 4', short:'HH-R', name:'Singer Kanan', type:'HH',
-    desc:'Handheld Vocalist R',
-    color:'#ff5c8a', color2:'#cc2255',
-    svgFn: svgHandheldSingerR
-  },
-  {
-    id:5, label:'CAM 5', short:'MASTER', name:'Master Center', type:'TB',
-    desc:'Tripod Wide Long',
-    color:'#e8003d', color2:'#9e0020',
-    svgFn: svgMaster
-  },
-  {
-    id:6, label:'CAM 6', short:'WIDE', name:'Wide Stage', type:'TB',
-    desc:'Tripod Wide + Singer',
-    color:'#ff6b00', color2:'#cc4500',
-    svgFn: svgWideStage
-  },
-  {
-    id:7, label:'CAM 7', short:'TB-R', name:'Stage Kanan', type:'TB',
-    desc:'Tripod Stage Right',
-    color:'#ffd600', color2:'#aa8e00',
-    svgFn: svgTripodRight
-  },
-  {
-    id:8, label:'CAM 8', short:'TB-LOW', name:'Stage Bawah', type:'TB',
-    desc:'Tripod Floor Level',
-    color:'#00e676', color2:'#009940',
-    svgFn: svgTripodLow
-  },
-  {
-    id:9, label:'CAM 9', short:'TB-OPP', name:'Seberang', type:'TB',
-    desc:'Tripod Opposite FOH',
-    color:'#aa00ff', color2:'#7700cc',
-    svgFn: svgTripodOpposite
-  },
-  {
-    id:10, label:'CAM 10', short:'JJ', name:'Jimmy Jib', type:'JJ',
-    desc:'Crane Crowd A9 Corner',
-    color:'#3a86ff', color2:'#0050cc',
-    svgFn: svgJimmyJib
-  },
+  { id:1, label:'CAM 1', short:'GB-L', name:'Gimbal Kiri', type:'GB', desc:'Bass · Drum · Guitar', color:'#00b4d8', color2:'#0077a8', svgFn: svgGimbalLeft },
+  { id:2, label:'CAM 2', short:'GB-R', name:'Gimbal Kanan', type:'GB', desc:'Keys · Synth · Violin', color:'#7b5ea7', color2:'#5a3d88', svgFn: svgGimbalRight },
+  { id:3, label:'CAM 3', short:'HH-L', name:'Singer Kiri', type:'HH', desc:'Handheld Vocalist L', color:'#e91e8c', color2:'#b0005e', svgFn: svgHandheldSingerL },
+  { id:4, label:'CAM 4', short:'HH-R', name:'Singer Kanan', type:'HH', desc:'Handheld Vocalist R', color:'#ff5c8a', color2:'#cc2255', svgFn: svgHandheldSingerR },
+  { id:5, label:'CAM 5', short:'MASTER', name:'Master Center', type:'TB', desc:'Tripod Wide Long', color:'#e8003d', color2:'#9e0020', svgFn: svgMaster },
+  { id:6, label:'CAM 6', short:'WIDE', name:'Wide Stage', type:'TB', desc:'Tripod Wide + Singer', color:'#ff6b00', color2:'#cc4500', svgFn: svgWideStage },
+  { id:7, label:'CAM 7', short:'TB-R', name:'Stage Kanan', type:'TB', desc:'Tripod Stage Right', color:'#ffd600', color2:'#aa8e00', svgFn: svgTripodRight },
+  { id:8, label:'CAM 8', short:'TB-LOW', name:'Stage Bawah', type:'TB', desc:'Tripod Floor Level', color:'#00e676', color2:'#009940', svgFn: svgTripodLow },
+  { id:9, label:'CAM 9', short:'TB-OPP', name:'Seberang', type:'TB', desc:'Tripod Opposite FOH', color:'#aa00ff', color2:'#7700cc', svgFn: svgTripodOpposite },
+  { id:10, label:'CAM 10', short:'JJ', name:'Jimmy Jib', type:'JJ', desc:'Crane Crowd A9 Corner', color:'#3a86ff', color2:'#0050cc', svgFn: svgJimmyJib },
 ];
 
 // ─── SVG ILLUSTRATIONS ────────────────────────────────────────────────────────
 function svgBase(w,h,bg,content){
-  return `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">
-  <rect width="${w}" height="${h}" fill="${bg}"/>
-  ${content}
-  </svg>`;
+  return `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg"><rect width="${w}" height="${h}" fill="${bg}"/>${content}</svg>`;
 }
-
 function svgGimbalLeft(large=false){
-  const s=large?3:1, W=large?480:96, H=large?270:54;
-  const bg='#040a14', c='#00b4d8', c2='#003850';
-  return svgBase(W,H,bg,`
-    <rect x="${8*s}" y="${H-22*s}" width="${W-16*s}" height="${4*s}" fill="${c2}" rx="${2*s}"/>
-    <ellipse cx="${18*s}" cy="${H-38*s}" rx="${7*s}" ry="${8*s}" fill="${c2}"/>
-    <rect x="${13*s}" y="${H-30*s}" width="${10*s}" height="${10*s}" fill="${c2}" rx="${2*s}"/>
-    <line x1="${10*s}" y1="${H-32*s}" x2="${14*s}" y2="${H-26*s}" stroke="${c}" stroke-width="${2*s}" stroke-linecap="round"/>
-    <line x1="${26*s}" y1="${H-32*s}" x2="${22*s}" y2="${H-26*s}" stroke="${c}" stroke-width="${2*s}" stroke-linecap="round"/>
-    <ellipse cx="${10*s}" cy="${H-34*s}" rx="${5*s}" ry="${3*s}" fill="none" stroke="${c}" stroke-width="${s}"/>
-    <ellipse cx="${26*s}" cy="${H-34*s}" rx="${4*s}" ry="${2*s}" fill="none" stroke="${c}" stroke-width="${s}"/>
-    <ellipse cx="${48*s}" cy="${H-40*s}" rx="${7*s}" ry="${8*s}" fill="${c2}"/>
-    <rect x="${43*s}" y="${H-32*s}" width="${10*s}" height="${12*s}" fill="${c2}" rx="${2*s}"/>
-    <rect x="${35*s}" y="${H-36*s}" width="${16*s}" height="${5*s}" fill="${c}" rx="${2*s}" opacity=".7"/>
-    <line x1="${43*s}" y1="${H-34*s}" x2="${33*s}" y2="${H-22*s}" stroke="${c}" stroke-width="${2*s}" stroke-linecap="round"/>
-    <ellipse cx="${78*s}" cy="${H-40*s}" rx="${7*s}" ry="${8*s}" fill="${c2}"/>
-    <rect x="${73*s}" y="${H-32*s}" width="${10*s}" height="${12*s}" fill="${c2}" rx="${2*s}"/>
-    <ellipse cx="${72*s}" cy="${H-26*s}" rx="${7*s}" ry="${5*s}" fill="${c}" opacity=".7"/>
-    <line x1="${73*s}" y1="${H-28*s}" x2="${62*s}" y2="${H-18*s}" stroke="${c}" stroke-width="${2*s}" stroke-linecap="round"/>
-    <rect x="${W-20*s}" y="${8*s}" width="${12*s}" height="${8*s}" fill="${c}" rx="${s}" opacity=".9"/>
-    <rect x="${W-18*s}" y="${4*s}" width="${8*s}" height="${5*s}" fill="${c}" rx="${s}" opacity=".7"/>
-    <line x1="${W-14*s}" y1="${12*s}" x2="${W-14*s}" y2="${22*s}" stroke="${c}" stroke-width="${2*s}"/>
-    <text x="${W/2}" y="${H-5*s}" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="${9*s}" fill="${c}" opacity=".7">BASS · DRUM · GUITAR</text>
-  `);
+  const s=large?3:1, W=large?480:96, H=large?270:54, bg='#040a14', c='#00b4d8', c2='#003850';
+  return svgBase(W,H,bg,`<rect x="${8*s}" y="${H-22*s}" width="${W-16*s}" height="${4*s}" fill="${c2}" rx="${2*s}"/><ellipse cx="${18*s}" cy="${H-38*s}" rx="${7*s}" ry="${8*s}" fill="${c2}"/><rect x="${13*s}" y="${H-30*s}" width="${10*s}" height="${10*s}" fill="${c2}" rx="${2*s}"/><line x1="${10*s}" y1="${H-32*s}" x2="${14*s}" y2="${H-26*s}" stroke="${c}" stroke-width="${2*s}"/><line x1="${26*s}" y1="${H-32*s}" x2="${22*s}" y2="${H-26*s}" stroke="${c}" stroke-width="${2*s}"/><ellipse cx="${48*s}" cy="${H-40*s}" rx="${7*s}" ry="${8*s}" fill="${c2}"/><rect x="${43*s}" y="${H-32*s}" width="${10*s}" height="${12*s}" fill="${c2}"/><rect x="${35*s}" y="${H-36*s}" width="${16*s}" height="${5*s}" fill="${c}" opacity=".7"/><ellipse cx="${78*s}" cy="${H-40*s}" rx="${7*s}" ry="${8*s}" fill="${c2}"/><text x="${W/2}" y="${H-5*s}" text-anchor="middle" font-family="var(--ff)" font-size="${9*s}" fill="${c}" opacity=".7">BASS · DRUM · GUITAR</text>`);
 }
-
 function svgGimbalRight(large=false){
-  const s=large?3:1, W=large?480:96, H=large?270:54;
-  const bg='#0a050f', c='#9b72cf', c2='#3d1a6e';
-  return svgBase(W,H,bg,`
-    <rect x="${8*s}" y="${H-22*s}" width="${W-16*s}" height="${4*s}" fill="${c2}" rx="${2*s}"/>
-    <ellipse cx="${20*s}" cy="${H-40*s}" rx="${7*s}" ry="${8*s}" fill="${c2}"/>
-    <rect x="${14*s}" y="${H-32*s}" width="${14*s}" height="${5*s}" fill="${c}" rx="${s}" opacity=".9"/>
-    <line x1="${14*s}" y1="${H-31*s}" x2="${14*s}" y2="${H-27*s}" stroke="#fff" stroke-width="${s}" opacity=".6"/>
-    <line x1="${16.5*s}" y1="${H-31*s}" x2="${16.5*s}" y2="${H-27*s}" stroke="#fff" stroke-width="${s}" opacity=".6"/>
-    <line x1="${19*s}" y1="${H-31*s}" x2="${19*s}" y2="${H-27*s}" stroke="#fff" stroke-width="${s}" opacity=".6"/>
-    <line x1="${21.5*s}" y1="${H-31*s}" x2="${21.5*s}" y2="${H-27*s}" stroke="#fff" stroke-width="${s}" opacity=".6"/>
-    <line x1="${24*s}" y1="${H-31*s}" x2="${24*s}" y2="${H-27*s}" stroke="#fff" stroke-width="${s}" opacity=".6"/>
-    <ellipse cx="${50*s}" cy="${H-40*s}" rx="${7*s}" ry="${8*s}" fill="${c2}"/>
-    <rect x="${44*s}" y="${H-32*s}" width="${12*s}" height="${4*s}" fill="${c}" rx="${s}" opacity=".8"/>
-    <rect x="${44*s}" y="${H-36*s}" width="${12*s}" height="${5*s}" fill="${c2}" rx="${s}"/>
-    <circle cx="${46*s}" cy="${H-34*s}" r="${1.5*s}" fill="${c}" opacity=".9"/>
-    <circle cx="${49*s}" cy="${H-34*s}" r="${1.5*s}" fill="${c}" opacity=".9"/>
-    <circle cx="${52*s}" cy="${H-34*s}" r="${1.5*s}" fill="${c}" opacity=".9"/>
-    <ellipse cx="${78*s}" cy="${H-42*s}" rx="${7*s}" ry="${8*s}" fill="${c2}"/>
-    <rect x="${73*s}" y="${H-34*s}" width="${10*s}" height="${14*s}" fill="${c2}" rx="${2*s}"/>
-    <ellipse cx="${72*s}" cy="${H-38*s}" rx="${4*s}" ry="${7*s}" fill="${c}" opacity=".7"/>
-    <line x1="${68*s}" y1="${H-44*s}" x2="${78*s}" y2="${H-26*s}" stroke="${c}" stroke-width="${s}" opacity=".8"/>
-    <rect x="${8*s}" y="${8*s}" width="${12*s}" height="${8*s}" fill="${c}" rx="${s}" opacity=".9"/>
-    <rect x="${10*s}" y="${4*s}" width="${8*s}" height="${5*s}" fill="${c}" rx="${s}" opacity=".7"/>
-    <line x1="${14*s}" y1="${12*s}" x2="${14*s}" y2="${22*s}" stroke="${c}" stroke-width="${2*s}"/>
-    <text x="${W/2}" y="${H-5*s}" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="${9*s}" fill="${c}" opacity=".7">KEYS · SYNTH · VIOLIN</text>
-  `);
+  const s=large?3:1, W=large?480:96, H=large?270:54, bg='#0a050f', c='#9b72cf', c2='#3d1a6e';
+  return svgBase(W,H,bg,`<rect x="${8*s}" y="${H-22*s}" width="${W-16*s}" height="${4*s}" fill="${c2}" rx="${2*s}"/><ellipse cx="${20*s}" cy="${H-40*s}" rx="${7*s}" ry="${8*s}" fill="${c2}"/><rect x="${14*s}" y="${H-32*s}" width="${14*s}" height="${5*s}" fill="${c}" rx="${s}" opacity=".9"/><ellipse cx="${50*s}" cy="${H-40*s}" rx="${7*s}" ry="${8*s}" fill="${c2}"/><rect x="${44*s}" y="${H-32*s}" width="${12*s}" height="${4*s}" fill="${c}" opacity=".8"/><ellipse cx="${78*s}" cy="${H-42*s}" rx="${7*s}" ry="${8*s}" fill="${c2}"/><text x="${W/2}" y="${H-5*s}" text-anchor="middle" font-family="var(--ff)" font-size="${9*s}" fill="${c}" opacity=".7">KEYS · SYNTH · VIOLIN</text>`);
 }
-
 function svgHandheldSingerL(large=false){
-  const s=large?3:1, W=large?480:96, H=large?270:54;
-  const bg='#130008', c='#e91e8c', c2='#600030';
-  return svgBase(W,H,bg,`
-    <ellipse cx="${W/2}" cy="${H*0.34}" rx="${18*s}" ry="${20*s}" fill="${c2}"/>
-    <ellipse cx="${W/2}" cy="${H*0.34}" rx="${14*s}" ry="${16*s}" fill="#b07060"/>
-    <ellipse cx="${W/2 + 8*s}" cy="${H*0.62}" rx="${4*s}" ry="${6*s}" fill="#555" stroke="${c}" stroke-width="${s}"/>
-    <line x1="${W/2 + 8*s}" y1="${H*0.68}" x2="${W/2 + 10*s}" y2="${H*0.85}" stroke="#555" stroke-width="${2*s}"/>
-    <rect x="${6*s}" y="${6*s}" width="${16*s}" height="${11*s}" fill="${c}" rx="${2*s}" opacity=".85"/>
-    <circle cx="${8*s}" cy="${9*s}" r="${3*s}" fill="#222"/>
-    <circle cx="${8*s}" cy="${9*s}" r="${2*s}" fill="#111"/>
-    <rect x="${12*s}" y="${8*s}" width="${7*s}" height="${3*s}" fill="#333" rx="${s}"/>
-    <radialGradient id="vig3" cx="50%" cy="50%" r="65%"><stop offset="0%" stop-color="transparent"/><stop offset="100%" stop-color="${bg}" stop-opacity=".7"/></radialGradient>
-    <rect width="${W}" height="${H}" fill="url(#vig3)"/>
-    <text x="${W/2}" y="${H-5*s}" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="${9*s}" fill="${c}" opacity=".8">VOCALIST L</text>
-  `);
+  const s=large?3:1, W=large?480:96, H=large?270:54, bg='#130008', c='#e91e8c', c2='#600030';
+  return svgBase(W,H,bg,`<ellipse cx="${W/2}" cy="${H*0.34}" rx="${18*s}" ry="${20*s}" fill="${c2}"/><ellipse cx="${W/2}" cy="${H*0.34}" rx="${14*s}" ry="${16*s}" fill="#b07060"/><ellipse cx="${W/2 + 8*s}" cy="${H*0.62}" rx="${4*s}" ry="${6*s}" fill="#555" stroke="${c}" stroke-width="${s}"/><radialGradient id="vig3" cx="50%" cy="50%" r="65%"><stop offset="0%" stop-color="transparent"/><stop offset="100%" stop-color="${bg}" stop-opacity=".7"/></radialGradient><rect width="${W}" height="${H}" fill="url(#vig3)"/><text x="${W/2}" y="${H-5*s}" text-anchor="middle" font-family="var(--ff)" font-size="${9*s}" fill="${c}" opacity=".8">VOCALIST L</text>`);
 }
-
 function svgHandheldSingerR(large=false){
-  const s=large?3:1, W=large?480:96, H=large?270:54;
-  const bg='#12000a', c='#ff5c8a', c2='#660025';
-  return svgBase(W,H,bg,`
-    <ellipse cx="${W/2}" cy="${H*0.34}" rx="${18*s}" ry="${20*s}" fill="${c2}"/>
-    <ellipse cx="${W/2}" cy="${H*0.34}" rx="${14*s}" ry="${16*s}" fill="#c08070"/>
-    <ellipse cx="${W/2}" cy="${H*0.2}" rx="${17*s}" ry="${10*s}" fill="${c2}"/>
-    <ellipse cx="${W/2 - 14*s}" cy="${H*0.35}" rx="${5*s}" ry="${12*s}" fill="${c2}"/>
-    <ellipse cx="${W/2 - 8*s}" cy="${H*0.62}" rx="${4*s}" ry="${6*s}" fill="#555" stroke="${c}" stroke-width="${s}"/>
-    <line x1="${W/2 - 8*s}" y1="${H*0.68}" x2="${W/2 - 10*s}" y2="${H*0.85}" stroke="#555" stroke-width="${2*s}"/>
-    <rect x="${W-22*s}" y="${6*s}" width="${16*s}" height="${11*s}" fill="${c}" rx="${2*s}" opacity=".85"/>
-    <circle cx="${W-8*s}" cy="${9*s}" r="${3*s}" fill="#222"/>
-    <circle cx="${W-8*s}" cy="${9*s}" r="${2*s}" fill="#111"/>
-    <rect x="${W-22*s}" y="${8*s}" width="${7*s}" height="${3*s}" fill="#333" rx="${s}"/>
-    <radialGradient id="vig4" cx="50%" cy="50%" r="65%"><stop offset="0%" stop-color="transparent"/><stop offset="100%" stop-color="${bg}" stop-opacity=".7"/></radialGradient>
-    <rect width="${W}" height="${H}" fill="url(#vig4)"/>
-    <text x="${W/2}" y="${H-5*s}" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="${9*s}" fill="${c}" opacity=".8">VOCALIST R</text>
-  `);
+  const s=large?3:1, W=large?480:96, H=large?270:54, bg='#12000a', c='#ff5c8a', c2='#660025';
+  return svgBase(W,H,bg,`<ellipse cx="${W/2}" cy="${H*0.34}" rx="${18*s}" ry="${20*s}" fill="${c2}"/><ellipse cx="${W/2}" cy="${H*0.34}" rx="${14*s}" ry="${16*s}" fill="#c08070"/><ellipse cx="${W/2 - 8*s}" cy="${H*0.62}" rx="${4*s}" ry="${6*s}" fill="#555" stroke="${c}" stroke-width="${s}"/><radialGradient id="vig4" cx="50%" cy="50%" r="65%"><stop offset="0%" stop-color="transparent"/><stop offset="100%" stop-color="${bg}" stop-opacity=".7"/></radialGradient><rect width="${W}" height="${H}" fill="url(#vig4)"/><text x="${W/2}" y="${H-5*s}" text-anchor="middle" font-family="var(--ff)" font-size="${9*s}" fill="${c}" opacity=".8">VOCALIST R</text>`);
 }
-
 function svgMaster(large=false){
-  const s=large?3:1, W=large?480:96, H=large?270:54;
-  const bg='#0f0004', c='#e8003d', c2='#400010';
-  return svgBase(W,H,bg,`
-    <rect x="${10*s}" y="${H*0.25}" width="${W-20*s}" height="${H*0.55}" fill="${c2}" rx="${3*s}"/>
-    <rect x="${20*s}" y="${H*0.08}" width="${W-40*s}" height="${H*0.2}" fill="#00244a" rx="${2*s}"/>
-    <rect x="${22*s}" y="${H*0.1}" width="${W-44*s}" height="${H*0.16}" fill="#003366" rx="${s}"/>
-    <line x1="${W/2}" y1="${H*0.1}" x2="${W/2}" y2="${H*0.26}" stroke="${c}" stroke-width="${s}" opacity=".5"/>
-    ${[0.18,0.32,0.5,0.68,0.82].map(x=>`
-      <ellipse cx="${x*W}" cy="${H*0.46}" rx="${5*s}" ry="${5*s}" fill="${c2}"/>
-      <rect x="${x*W-3*s}" y="${H*0.51}" width="${6*s}" height="${9*s}" fill="${c2}" rx="${s}"/>
-    `).join('')}
-    <line x1="${W/2}" y1="${H*0.9}" x2="${W/2-8*s}" y2="${H}" stroke="${c}" stroke-width="${s}"/>
-    <line x1="${W/2}" y1="${H*0.9}" x2="${W/2+8*s}" y2="${H}" stroke="${c}" stroke-width="${s}"/>
-    <rect x="${W/2-4*s}" y="${H*0.84}" width="${8*s}" height="${6*s}" fill="${c}" rx="${s}" opacity=".8"/>
-    <text x="${W/2}" y="${H-4*s}" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="${9*s}" fill="${c}" opacity=".8">MASTER · WIDE LONG</text>
-  `);
+  const s=large?3:1, W=large?480:96, H=large?270:54, bg='#0f0004', c='#e8003d', c2='#400010';
+  return svgBase(W,H,bg,`<rect x="${10*s}" y="${H*0.25}" width="${W-20*s}" height="${H*0.55}" fill="${c2}" rx="${3*s}"/><rect x="${20*s}" y="${H*0.08}" width="${W-40*s}" height="${H*0.2}" fill="#00244a" rx="${2*s}"/><line x1="${W/2}" y1="${H*0.1}" x2="${W/2}" y2="${H*0.26}" stroke="${c}" stroke-width="${s}" opacity=".5"/>${[0.18,0.32,0.5,0.68,0.82].map(x=>`<ellipse cx="${x*W}" cy="${H*0.46}" rx="${5*s}" ry="${5*s}" fill="${c2}"/>`).join('')}<text x="${W/2}" y="${H-4*s}" text-anchor="middle" font-family="var(--ff)" font-size="${9*s}" fill="${c}" opacity=".8">MASTER · WIDE LONG</text>`);
 }
-
 function svgWideStage(large=false){
-  const s=large?3:1, W=large?480:96, H=large?270:54;
-  const bg='#0f0500', c='#ff6b00', c2='#502000';
-  return svgBase(W,H,bg,`
-    <rect x="${8*s}" y="${H*0.3}" width="${W-16*s}" height="${H*0.5}" fill="${c2}" rx="${3*s}"/>
-    <rect x="${16*s}" y="${H*0.1}" width="${W-32*s}" height="${H*0.22}" fill="#001a00" rx="${2*s}"/>
-    <text x="${W/2}" y="${H*0.25}" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="${9*s}" fill="${c}" opacity=".6">WELCOME HOME</text>
-    <ellipse cx="${W/2}" cy="${H*0.41}" rx="${8*s}" ry="${9*s}" fill="#b07060"/>
-    <rect x="${W/2-5*s}" y="${H*0.5}" width="${10*s}" height="${14*s}" fill="${c2}"/>
-    <ellipse cx="${W*0.2}" cy="${H*0.46}" rx="${5*s}" ry="${5*s}" fill="${c2}"/>
-    <rect x="${W*0.2-3*s}" y="${H*0.51}" width="${6*s}" height="${9*s}" fill="${c2}"/>
-    <ellipse cx="${W*0.8}" cy="${H*0.46}" rx="${5*s}" ry="${5*s}" fill="${c2}"/>
-    <rect x="${W*0.8-3*s}" y="${H*0.51}" width="${6*s}" height="${9*s}" fill="${c2}"/>
-    <line x1="${W/2}" y1="${H*0.88}" x2="${W/2-8*s}" y2="${H}" stroke="${c}" stroke-width="${s}"/>
-    <line x1="${W/2}" y1="${H*0.88}" x2="${W/2+8*s}" y2="${H}" stroke="${c}" stroke-width="${s}"/>
-    <rect x="${W/2-4*s}" y="${H*0.82}" width="${8*s}" height="${6*s}" fill="${c}" rx="${s}" opacity=".8"/>
-    <text x="${W/2}" y="${H-4*s}" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="${9*s}" fill="${c}" opacity=".8">WIDE + SINGER</text>
-  `);
+  const s=large?3:1, W=large?480:96, H=large?270:54, bg='#0f0500', c='#ff6b00', c2='#502000';
+  return svgBase(W,H,bg,`<rect x="${8*s}" y="${H*0.3}" width="${W-16*s}" height="${H*0.5}" fill="${c2}" rx="${3*s}"/><text x="${W/2}" y="${H*0.25}" text-anchor="middle" font-family="var(--ff)" font-size="${9*s}" fill="${c}" opacity=".6">WELCOME HOME</text><ellipse cx="${W/2}" cy="${H*0.41}" rx="${8*s}" ry="${9*s}" fill="#b07060"/><text x="${W/2}" y="${H-4*s}" text-anchor="middle" font-family="var(--ff)" font-size="${9*s}" fill="${c}" opacity=".8">WIDE + SINGER</text>`);
 }
-
 function svgTripodRight(large=false){
-  const s=large?3:1, W=large?480:96, H=large?270:54;
-  const bg='#0e0c00', c='#ffd600', c2='#504000';
-  return svgBase(W,H,bg,`
-    <rect x="${6*s}" y="${H*0.25}" width="${W-12*s}" height="${H*0.55}" fill="${c2}" rx="${3*s}" opacity=".7"/>
-    ${[0.3,0.5,0.7].map((x,i)=>`
-      <ellipse cx="${x*W}" cy="${H*(0.35+i*.02)}" rx="${(8-i)*s}" ry="${(9-i)*s}" fill="${c2}"/>
-      <rect x="${x*W-(5-i/2)*s}" y="${H*(0.44+i*.02)}" width="${(10-i)*s}" height="${(12-i)*s}" fill="${c2}" rx="${s}"/>
-    `).join('')}
-    <line x1="${W-10*s}" y1="${4*s}" x2="${W*0.3}" y2="${H*0.28}" stroke="${c}" stroke-width="${s}" opacity=".6"/>
-    <circle cx="${W-10*s}" cy="${4*s}" r="${3*s}" fill="${c}" opacity=".8"/>
-    <line x1="${W-12*s}" y1="${H*0.85}" x2="${W-20*s}" y2="${H}" stroke="${c}" stroke-width="${s}"/>
-    <line x1="${W-12*s}" y1="${H*0.85}" x2="${W-4*s}" y2="${H}" stroke="${c}" stroke-width="${s}"/>
-    <rect x="${W-16*s}" y="${H*0.79}" width="${8*s}" height="${6*s}" fill="${c}" rx="${s}" opacity=".8"/>
-    <text x="${W/2}" y="${H-4*s}" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="${9*s}" fill="${c}" opacity=".8">STAGE RIGHT</text>
-  `);
+  const s=large?3:1, W=large?480:96, H=large?270:54, bg='#0e0c00', c='#ffd600', c2='#504000';
+  return svgBase(W,H,bg,`<rect x="${6*s}" y="${H*0.25}" width="${W-12*s}" height="${H*0.55}" fill="${c2}" rx="${3*s}" opacity=".7"/>${[0.3,0.5,0.7].map((x,i)=>`<ellipse cx="${x*W}" cy="${H*(0.35+i*.02)}" rx="${(8-i)*s}" ry="${(9-i)*s}" fill="${c2}"/>`).join('')}<text x="${W/2}" y="${H-4*s}" text-anchor="middle" font-family="var(--ff)" font-size="${9*s}" fill="${c}" opacity=".8">STAGE RIGHT</text>`);
 }
-
 function svgTripodLow(large=false){
-  const s=large?3:1, W=large?480:96, H=large?270:54;
-  const bg='#000d08', c='#00e676', c2='#003820';
-  return svgBase(W,H,bg,`
-    <rect x="0" y="0" width="${W}" height="${H*0.35}" fill="#000820"/>
-    <rect x="0" y="${H*0.65}" width="${W}" height="${H*0.35}" fill="${c2}" opacity=".6"/>
-    ${[0.2,0.4,0.6,0.8].map(x=>`
-      <rect x="${x*W-3*s}" y="${H*0.35}" width="${6*s}" height="${H*0.3}" fill="${c2}"/>
-      <ellipse cx="${x*W}" cy="${H*0.35}" rx="${7*s}" ry="${6*s}" fill="${c2}"/>
-    `).join('')}
-    ${[0.2,0.4,0.6,0.8].map(x=>`
-      <ellipse cx="${x*W}" cy="${H*0.08}" rx="${5*s}" ry="${3*s}" fill="${c}" opacity=".7"/>
-      <line x1="${x*W}" y1="${H*0.11}" x2="${x*W}" y2="${H*0.3}" stroke="${c}" stroke-width="${s}" opacity=".4"/>
-    `).join('')}
-    <rect x="${W/2-6*s}" y="${H*0.82}" width="${12*s}" height="${7*s}" fill="${c}" rx="${s}" opacity=".8"/>
-    <circle cx="${W/2}" cy="${H*0.78}" r="${3*s}" fill="#111" stroke="${c}" stroke-width="${s}"/>
-    <text x="${W/2}" y="${H-3*s}" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="${9*s}" fill="${c}" opacity=".8">FLOOR LEVEL</text>
-  `);
+  const s=large?3:1, W=large?480:96, H=large?270:54, bg='#000d08', c='#00e676', c2='#003820';
+  return svgBase(W,H,bg,`<rect x="0" y="0" width="${W}" height="${H*0.35}" fill="#000820"/><rect x="0" y="${H*0.65}" width="${W}" height="${H*0.35}" fill="${c2}" opacity=".6"/>${[0.2,0.4,0.6,0.8].map(x=>`<rect x="${x*W-3*s}" y="${H*0.35}" width="${6*s}" height="${H*0.3}" fill="${c2}"/>`).join('')}<text x="${W/2}" y="${H-3*s}" text-anchor="middle" font-family="var(--ff)" font-size="${9*s}" fill="${c}" opacity=".8">FLOOR LEVEL</text>`);
 }
-
 function svgTripodOpposite(large=false){
-  const s=large?3:1, W=large?480:96, H=large?270:54;
-  const bg='#0a0015', c='#aa00ff', c2='#350060';
-  return svgBase(W,H,bg,`
-    ${[0.1,0.25,0.4,0.55,0.7,0.85].map((x,i)=>`
-      <ellipse cx="${x*W}" cy="${H*0.75}" rx="${6*s}" ry="${6*s}" fill="${c2}" opacity="${0.7+i*.04}"/>
-    `).join('')}
-    ${[0.18,0.32,0.48,0.63,0.78].map(x=>`
-      <ellipse cx="${x*W}" cy="${H*0.65}" rx="${5*s}" ry="${5*s}" fill="${c2}" opacity=".55"/>
-    `).join('')}
-    <rect x="${W*0.15}" y="${H*0.18}" width="${W*0.7}" height="${H*0.35}" fill="${c2}" rx="${3*s}" opacity=".7"/>
-    <rect x="${W*0.25}" y="${H*0.12}" width="${W*0.5}" height="${H*0.1}" fill="#002244" rx="${s}"/>
-    <text x="${W/2}" y="${H*0.19}" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="${7*s}" fill="${c}" opacity=".5">WELCOME HOME</text>
-    <line x1="${W*0.4}" y1="${H*0.18}" x2="${W*0.2}" y2="${H*0.6}" stroke="${c}" stroke-width="${s}" opacity=".25"/>
-    <line x1="${W*0.6}" y1="${H*0.18}" x2="${W*0.8}" y2="${H*0.6}" stroke="${c}" stroke-width="${s}" opacity=".25"/>
-    <line x1="${W/2}" y1="${H*0.86}" x2="${W/2-8*s}" y2="${H}" stroke="${c}" stroke-width="${s}"/>
-    <line x1="${W/2}" y1="${H*0.86}" x2="${W/2+8*s}" y2="${H}" stroke="${c}" stroke-width="${s}"/>
-    <rect x="${W/2-4*s}" y="${H*0.8}" width="${8*s}" height="${6*s}" fill="${c}" rx="${s}" opacity=".8"/>
-    <text x="${W/2}" y="${H-4*s}" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="${9*s}" fill="${c}" opacity=".8">FOH OPPOSITE</text>
-  `);
+  const s=large?3:1, W=large?480:96, H=large?270:54, bg='#0a0015', c='#aa00ff', c2='#350060';
+  return svgBase(W,H,bg,`${[0.1,0.25,0.4,0.55,0.7,0.85].map((x,i)=>`<ellipse cx="${x*W}" cy="${H*0.75}" rx="${6*s}" ry="${6*s}" fill="${c2}" opacity="${0.7+i*.04}"/>`).join('')}<rect x="${W*0.15}" y="${H*0.18}" width="${W*0.7}" height="${H*0.35}" fill="${c2}" rx="${3*s}" opacity=".7"/><text x="${W/2}" y="${H-4*s}" text-anchor="middle" font-family="var(--ff)" font-size="${9*s}" fill="${c}" opacity=".8">FOH OPPOSITE</text>`);
 }
-
 function svgJimmyJib(large=false){
-  const s=large?3:1, W=large?480:96, H=large?270:54;
-  const bg='#000814', c='#3a86ff', c2='#001840';
-  return svgBase(W,H,bg,`
-    ${Array.from({length:5},(v,row)=>Array.from({length:8},(v2,col)=>`
-      <ellipse cx="${(col*11+6)*s}" cy="${(row*8+12)*s}" rx="${3*s}" ry="${3*s}" fill="${c2}" opacity="${0.4+row*.08}"/>
-    `).join('')).join('')}
-    <rect x="${W*0.55}" y="${H*0.08}" width="${W*0.38}" height="${H*0.45}" fill="${c2}" rx="${3*s}" opacity=".8"/>
-    <rect x="${W*0.58}" y="${H*0.1}" width="${W*0.32}" height="${H*0.12}" fill="#001a3a" rx="${s}"/>
-    <line x1="${6*s}" y1="${H-6*s}" x2="${W*0.55}" y2="${H*0.22}" stroke="${c}" stroke-width="${2*s}" opacity=".8"/>
-    <rect x="${W*0.52}" y="${H*0.16}" width="${10*s}" height="${7*s}" fill="${c}" rx="${s}" opacity=".9"/>
-    <circle cx="${W*0.52+5*s}" cy="${H*0.2}" r="${3*s}" fill="#111" stroke="${c}" stroke-width="${s}"/>
-    <rect x="${2*s}" y="${H-14*s}" width="${12*s}" height="${8*s}" fill="${c2}" rx="${2*s}"/>
-    <line x1="${8*s}" y1="${H-6*s}" x2="${2*s}" y2="${H}" stroke="${c}" stroke-width="${s}"/>
-    <line x1="${8*s}" y1="${H-6*s}" x2="${14*s}" y2="${H}" stroke="${c}" stroke-width="${s}"/>
-    <text x="${W/2}" y="${H-4*s}" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="${9*s}" fill="${c}" opacity=".8">CRANE · CROWD</text>
-  `);
+  const s=large?3:1, W=large?480:96, H=large?270:54, bg='#000814', c='#3a86ff', c2='#001840';
+  return svgBase(W,H,bg,`<rect x="${W*0.55}" y="${H*0.08}" width="${W*0.38}" height="${H*0.45}" fill="${c2}" rx="${3*s}" opacity=".8"/><line x1="${6*s}" y1="${H-6*s}" x2="${W*0.55}" y2="${H*0.22}" stroke="${c}" stroke-width="${2*s}"/><text x="${W/2}" y="${H-4*s}" text-anchor="middle" font-family="var(--ff)" font-size="${9*s}" fill="${c}" opacity=".8">CRANE · CROWD</text>`);
 }
 
 // ─── STATE ─────────────────────────────────────────────────────────────────
-let pgmCam=5, pvwCam=3, transMode='cut';
+let pgmCam=5;
 const YT_API_KEY='AIzaSyDlhQeaMbGlP7jCuD3wToqg6NP8idYjKrQ';
 let startT=Date.now();
 
@@ -659,7 +409,7 @@ function buildGrid(){
   grid.innerHTML='';
   CAMS.forEach(cam=>{
     const cell=document.createElement('div');
-    cell.className='cam-cell'+(cam.id===pgmCam?' pgm':cam.id===pvwCam?' pvw':'');
+    cell.className='cam-cell'+(cam.id===pgmCam?' pgm':'');
     cell.id=`cell-${cam.id}`;
     cell.innerHTML=`
       <div class="cell-lbl">${cam.label}</div>
@@ -670,8 +420,7 @@ function buildGrid(){
         <span class="cell-type-tag">${cam.type}</span>
       </div>
     `;
-    cell.addEventListener('click',()=>handleCellClick(cam.id));
-    cell.addEventListener('dblclick',()=>handleCellDblClick(cam.id));
+    cell.addEventListener('click',()=>cutTo(cam.id));
     grid.appendChild(cell);
   });
 }
@@ -681,10 +430,10 @@ function buildSwitcher(){
   sw.innerHTML='';
   CAMS.forEach(cam=>{
     const b=document.createElement('div');
-    b.className='sw-btn'+(cam.id===pgmCam?' pgm-sw':cam.id===pvwCam?' pvw-sw':'');
+    b.className='sw-btn'+(cam.id===pgmCam?' pgm-sw':'');
     b.id=`sw-${cam.id}`;
     b.innerHTML=`<div class="sw-num">${cam.id}</div><div class="sw-lbl">${cam.short}</div><div class="sw-dot"></div>`;
-    b.addEventListener('click',()=>handleSwClick(cam.id));
+    b.addEventListener('click',()=>cutTo(cam.id));
     sw.appendChild(b);
   });
 }
@@ -694,57 +443,53 @@ function updatePgmPreview(){
   document.getElementById('pgm-illustration').innerHTML=cam.svgFn(true);
   document.getElementById('pgm-cam-overlay').textContent=`CAM ${cam.id} — ${cam.name.toUpperCase()} · ${cam.type}`;
   document.getElementById('pgm-name').textContent=`CAM ${cam.id} — ${cam.name.toUpperCase()}`;
-  document.getElementById('pvw-name').textContent=`CAM ${pvwCam} — ${CAMS[pvwCam-1].name.toUpperCase()}`;
 }
 
 function refreshAll(){
   CAMS.forEach(c=>{
     const cell=document.getElementById(`cell-${c.id}`);
     const sw=document.getElementById(`sw-${c.id}`);
-    cell.className='cam-cell'+(c.id===pgmCam?' pgm':c.id===pvwCam?' pvw':'');
-    sw.className='sw-btn'+(c.id===pgmCam?' pgm-sw':c.id===pvwCam?' pvw-sw':'');
+    cell.className='cam-cell'+(c.id===pgmCam?' pgm':'');
+    sw.className='sw-btn'+(c.id===pgmCam?' pgm-sw':'');
   });
   updatePgmPreview();
 }
 
-// ─── INTERACTIONS ────────────────────────────────────────────────────────────
-function handleCellClick(id){
-  if(id===pgmCam){showToast(`CAM ${id} ON AIR`);return;}
-  if(id===pvwCam){doTake();return;}
-  pvwCam=id;
-  refreshAll();
-  showToast(`PVW → CAM ${id}: ${CAMS[id-1].name}`);
-}
-function handleCellDblClick(id){
-  if(id!==pgmCam) cutTo(id);
-}
-function handleSwClick(id){
-  if(id===pgmCam){showToast(`CAM ${id} is ON AIR`);return;}
-  if(id===pvwCam){doTake();return;}
-  pvwCam=id; refreshAll();
-  showToast(`PVW → CAM ${id}: ${CAMS[id-1].name}`);
-}
 function cutTo(id){
-  const prev=pgmCam;
   pgmCam=id;
-  if(pvwCam===id) pvwCam=prev;
   const cell=document.getElementById(`cell-${id}`);
-  cell.classList.add('flash');
-  setTimeout(()=>cell.classList.remove('flash'),250);
+  if(cell){
+    cell.classList.add('flash');
+    setTimeout(()=>cell.classList.remove('flash'),250);
+  }
   refreshAll();
-  showToast(`✂ CUT → CAM ${id}: ${CAMS[id-1].name}`);
+  showToast(`🔴 ON AIR → CAM ${id}: ${CAMS[id-1].name}`);
 }
-function doTake(){
-  const o=pgmCam; pgmCam=pvwCam; pvwCam=o;
-  const cell=document.getElementById(`cell-${pgmCam}`);
-  cell.classList.add('flash');
-  setTimeout(()=>cell.classList.remove('flash'),250);
-  refreshAll();
-  showToast(`🔴 TAKE → CAM ${pgmCam}: ${CAMS[pgmCam-1].name}`);
+
+// ─── DRAGGABLE SPLIT PANEL LOGIC (KIRI / KANAN RESIZER) ──────────────────────
+const resizer = document.getElementById('resizer');
+const rightPanel = document.getElementById('right-panel');
+const mainContainer = document.getElementById('main');
+
+resizer.addEventListener('mousedown', (e) => {
+  document.body.classList.add('resizing');
+  window.addEventListener('mousemove', resizePanel);
+  window.addEventListener('mouseup', stopResize);
+});
+
+function resizePanel(e) {
+  const containerWidth = mainContainer.getBoundingClientRect().width;
+  const newRightWidth = containerWidth - (e.clientX - mainContainer.getBoundingClientRect().left);
+  
+  if (newRightWidth > 260 && newRightWidth < 500) {
+    rightPanel.style.width = `${newRightWidth}px`;
+  }
 }
-function setTrans(m){
-  transMode=m;
-  ['cut','mix','fade'].forEach(x=>document.getElementById(`tb-${x}`).classList.toggle('on',x===m));
+
+function stopResize() {
+  document.body.classList.remove('resizing');
+  window.removeEventListener('mousemove', resizePanel);
+  window.removeEventListener('mouseup', stopResize);
 }
 
 // ─── TIMECODE ────────────────────────────────────────────────────────────────
@@ -771,9 +516,8 @@ function showToast(msg){
 document.addEventListener('keydown',e=>{
   if(e.target.tagName==='INPUT') return;
   const n=parseInt(e.key);
-  if(!isNaN(n)&&n>=1&&n<=9){handleSwClick(n);return;}
-  if(e.key==='0'){handleSwClick(10);return;}
-  if(e.key===' '||e.key==='t'||e.key==='T'){e.preventDefault();doTake();return;}
+  if(!isNaN(n)&&n>=1&&n<=9){cutTo(n);return;}
+  if(e.key==='0'){cutTo(10);return;}
 });
 
 // ─── YOUTUBE SMART LOGIC ─────────────────────────────────────────────────────
