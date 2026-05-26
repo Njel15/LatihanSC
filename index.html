@@ -54,13 +54,16 @@ body{background:var(--bg);color:var(--text);font-family:var(--ff);min-height:100
 /* LEFT SIDE */
 #left-col{display:flex;flex-direction:column;overflow:hidden;}
 
-/* PGM PREVIEW (large) */
+/* PGM PREVIEW (FIXED: Mengatasi gambar tenggelam) */
 #pgm-preview{
   position:relative;flex-shrink:0;
   background:#000;
   border-bottom:2px solid var(--acc);
   overflow:hidden;
-  height:38%;
+  height:40%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 #pgm-preview .pgm-frame{width:100%;height:100%;display:block;border:none;}
 #pgm-label-overlay{
@@ -77,7 +80,21 @@ body{background:var(--bg);color:var(--text);font-family:var(--ff);min-height:100
   font-family:var(--ffb);font-size:1.15rem;letter-spacing:2px;color:#fff;
   padding:3px 12px;border-radius:4px;border:1px solid var(--acc);
 }
-#pgm-illustration{width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
+#pgm-illustration{
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:8px 0;
+}
+#pgm-illustration svg {
+  max-width:100%;
+  max-height:100%;
+  width:auto;
+  height:auto;
+  display:block;
+}
 
 /* MULTIVIEW GRID */
 #mv-grid{
@@ -528,7 +545,7 @@ function svgMaster(large=false){
     <line x1="${W/2}" y1="${H*0.9}" x2="${W/2-8*s}" y2="${H}" stroke="${c}" stroke-width="${s}"/>
     <line x1="${W/2}" y1="${H*0.9}" x2="${W/2+8*s}" y2="${H}" stroke="${c}" stroke-width="${s}"/>
     <rect x="${W/2-4*s}" y="${H*0.84}" width="${8*s}" height="${6*s}" fill="${c}" rx="${s}" opacity=".8"/>
-    <text x="${W/2}" y="${H-4*s}" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="${9*s}" fill="${c}" opacity=".8">MASTER</text>
+    <text x="${W/2}" y="${H-4*s}" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="${9*s}" fill="${c}" opacity=".8">MASTER · WIDE LONG</text>
   `);
 }
 
@@ -548,7 +565,7 @@ function svgWideStage(large=false){
     <line x1="${W/2}" y1="${H*0.88}" x2="${W/2-8*s}" y2="${H}" stroke="${c}" stroke-width="${s}"/>
     <line x1="${W/2}" y1="${H*0.88}" x2="${W/2+8*s}" y2="${H}" stroke="${c}" stroke-width="${s}"/>
     <rect x="${W/2-4*s}" y="${H*0.82}" width="${8*s}" height="${6*s}" fill="${c}" rx="${s}" opacity=".8"/>
-    <text x="${W/2}" y="${H-4*s}" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="${9*s}" fill="${c}" opacity=".8">WIDE STAGE</text>
+    <text x="${W/2}" y="${H-4*s}" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="${9*s}" fill="${c}" opacity=".8">WIDE + SINGER</text>
   `);
 }
 
@@ -586,7 +603,7 @@ function svgTripodLow(large=false){
     `).join('')}
     <rect x="${W/2-6*s}" y="${H*0.82}" width="${12*s}" height="${7*s}" fill="${c}" rx="${s}" opacity=".8"/>
     <circle cx="${W/2}" cy="${H*0.78}" r="${3*s}" fill="#111" stroke="${c}" stroke-width="${s}"/>
-    <text x="${W/2}" y="${H-3*s}" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="${9*s}" fill="${c}" opacity=".8">STAGE LEFT</text>
+    <text x="${W/2}" y="${H-3*s}" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="${9*s}" fill="${c}" opacity=".8">FLOOR LEVEL</text>
   `);
 }
 
@@ -608,7 +625,7 @@ function svgTripodOpposite(large=false){
     <line x1="${W/2}" y1="${H*0.86}" x2="${W/2-8*s}" y2="${H}" stroke="${c}" stroke-width="${s}"/>
     <line x1="${W/2}" y1="${H*0.86}" x2="${W/2+8*s}" y2="${H}" stroke="${c}" stroke-width="${s}"/>
     <rect x="${W/2-4*s}" y="${H*0.8}" width="${8*s}" height="${6*s}" fill="${c}" rx="${s}" opacity=".8"/>
-    <text x="${W/2}" y="${H-4*s}" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="${9*s}" fill="${c}" opacity=".8">STAGE SEBERANG</text>
+    <text x="${W/2}" y="${H-4*s}" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="${9*s}" fill="${c}" opacity=".8">FOH OPPOSITE</text>
   `);
 }
 
@@ -814,8 +831,6 @@ function playVideo(id, el){
   document.getElementById('embed-placeholder').style.display='none';
   const iframe=document.getElementById('yt-embed');
   iframe.style.display='block';
-  
-  // PERBAIKAN UTAMA: Tambahkan parameter mute=1 dan enablejsapi=1 agar browser mengizinkan autoplay
   iframe.src=`https://www.youtube.com/embed/${id}?autoplay=1&mute=1&enablejsapi=1`;
   
   const chip=document.getElementById('yt-status-chip');
